@@ -1,5 +1,7 @@
-const { join } = require('path')
+const { join, resolve } = require('path')
 const Encore = require('@symfony/webpack-encore')
+const Components = require('unplugin-vue-components/webpack')
+const { NaiveUiResolver } = require('unplugin-vue-components/resolvers')
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +47,7 @@ Encore.setPublicPath('/ssr')
 | entrypoints.
 |
 */
-Encore.addEntry('ssr', './resources/js/ssr.js')
+Encore.addEntry('ssr', './resources/js/ssr.tsx')
 
 /*
 |--------------------------------------------------------------------------
@@ -142,11 +144,19 @@ Encore.configureDevServerOptions((options) => {
 | sure to install the required dependencies.
 |
 */
-// Encore.enableVueLoader(() => {}, {
-//   version: 3,
-//   runtimeCompilerBuild: false,
-//   useJsx: false,
-// })
+Encore.enableVueLoader(() => {}, {
+  version: 3,
+  runtimeCompilerBuild: false,
+  useJsx: false,
+})
+
+Encore.addPlugin(Components({
+  resolvers: [NaiveUiResolver()]
+}))
+
+Encore.addAliases({
+  '@': resolve(__dirname, 'resources/js')
+})
 
 /*
 |--------------------------------------------------------------------------
@@ -170,7 +180,9 @@ config.stats = 'errors-warnings'
 |--------------------------------------------------------------------------
 |
 */
-config.externals = [require('webpack-node-externals')()]
+config.externals = [require('webpack-node-externals')({
+  allowlist: ['@inertiajs/core', '@inertiajs/vue3'],
+})]
 config.externalsPresets = { node: true }
 config.output = {
   libraryTarget: 'commonjs2',

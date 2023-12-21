@@ -1,0 +1,4 @@
+{
+  "ssr/ssr.css": "autossr.css",
+  "ssr/ssr.js": "autossr.js"
+}

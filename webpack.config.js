@@ -1,5 +1,7 @@
-const { join } = require('path')
+const { join, resolve } = require('path')
 const Encore = require('@symfony/webpack-encore')
+const Components = require('unplugin-vue-components/webpack')
+const { NaiveUiResolver } = require('unplugin-vue-components/resolvers')
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +47,7 @@ Encore.setPublicPath('/assets')
 | entrypoints.
 |
 */
-Encore.addEntry('app', './resources/js/app.js')
+Encore.addEntry('app', './resources/js/app.tsx')
 
 /*
 |--------------------------------------------------------------------------
@@ -169,7 +171,7 @@ Encore.configureDevServerOptions((options) => {
 | PostCSS or CSS.
 |
 */
-// Encore.enablePostCssLoader()
+Encore.enablePostCssLoader()
 // Encore.configureCssLoader(() => {})
 
 /*
@@ -181,11 +183,19 @@ Encore.configureDevServerOptions((options) => {
 | sure to install the required dependencies.
 |
 */
-// Encore.enableVueLoader(() => {}, {
-//   version: 3,
-//   runtimeCompilerBuild: false,
-//   useJsx: false
-// })
+Encore.enableVueLoader(() => {}, {
+  version: 3,
+  runtimeCompilerBuild: false,
+  useJsx: false
+})
+
+Encore.addPlugin(Components({
+  resolvers: [NaiveUiResolver()]
+}))
+
+Encore.addAliases({
+  '@': resolve(__dirname, 'resources/js')
+})
 
 /*
 |--------------------------------------------------------------------------
